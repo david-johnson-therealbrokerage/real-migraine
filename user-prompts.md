@@ -89,3 +89,23 @@
 **Request:** Add this description as the "hackathon google forms submission description" to the readme: Migraine Tracking and predictions - The app serves 2 purposes: 1) Predict when you are going to have a migraine based on barometric pressure, temperature fluctuations, intervals (hormonal), and self-reported wellness factors like sleep, mood, diet. 2) Provide an easy way to export your data to medical providers for the purpose of making decisions on preventative vs abortive, and treatment adjustments (like demonstrating triptan therapy failure).
 
 **Response:** Added hackathon submission description to README.md highlighting predictive features and medical provider export capabilities
+
+## Prompt 19
+**Request:** commit
+
+**Response:** Committed MVP Phase 1 implementation with routing, authentication, storage service, and all core pages
+
+## Prompt 20
+**Request:** npm start error with react-router-dom
+
+**Response:** Fixed React Router dependency issue by downgrading from v7 to v6.30.1
+
+## Prompt 21
+**Request:** commit
+
+**Response:** Committed React Router dependency fix
+
+## Prompt 22
+**Request:** keep user-prompts.md up to date. (And don't forget to continue doing this)
+
+**Response:** Updated user-prompts.md with recent prompts and will continue maintaining it
