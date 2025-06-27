@@ -1,6 +1,7 @@
 import authService from './authService';
 import firestoreService from './firestoreService';
 import storageService from './storage';
+import { isFirebaseEnabled } from '../config/environment';
 
 class MigrationService {
   async migrateLocalDataToFirestore() {
@@ -61,6 +62,11 @@ class MigrationService {
 
   async checkMigrationStatus() {
     try {
+      // First check if Firebase is even enabled
+      if (!isFirebaseEnabled()) {
+        return { migrated: false, reason: 'Firebase not enabled' };
+      }
+
       const user = authService.getCurrentUser();
       if (!user) {
         return { migrated: false, reason: 'Not authenticated' };

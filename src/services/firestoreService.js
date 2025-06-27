@@ -6,6 +6,7 @@ import {
   deleteDoc, 
   getDoc,
   getDocs,
+  setDoc,
   query,
   where,
   orderBy,
@@ -94,7 +95,7 @@ class FirestoreService {
 
   async getUserMigraines(userId, limitCount = null) {
     if (!this.isAvailable) {
-      return { success: false, error: 'Firestore is not available' };
+      return { success: true, data: [] }; // Return empty array when Firestore not available
     }
     try {
       let q = query(
@@ -122,7 +123,7 @@ class FirestoreService {
 
   async getMigrainesByDateRange(userId, startDate, endDate) {
     if (!this.isAvailable) {
-      return { success: false, error: 'Firestore is not available' };
+      return { success: true, data: [] }; // Return empty array when Firestore not available
     }
     try {
       const q = query(
@@ -149,7 +150,7 @@ class FirestoreService {
   // User preferences
   async getUserPreferences(userId) {
     if (!this.isAvailable) {
-      return { success: false, error: 'Firestore is not available' };
+      return { success: true, data: {} }; // Return empty preferences when Firestore not available
     }
     try {
       const docSnap = await getDoc(doc(db, this.collections.users, userId));
@@ -170,10 +171,24 @@ class FirestoreService {
     }
     try {
       const userRef = doc(db, this.collections.users, userId);
-      await updateDoc(userRef, {
-        preferences,
-        updatedAt: serverTimestamp()
-      });
+      
+      // Check if user document exists first
+      const userDoc = await getDoc(userRef);
+      if (!userDoc.exists()) {
+        // Create the user document if it doesn't exist
+        await setDoc(userRef, {
+          preferences,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+      } else {
+        // Update existing document
+        await updateDoc(userRef, {
+          preferences,
+          updatedAt: serverTimestamp()
+        });
+      }
+      
       return { success: true };
     } catch (error) {
       console.error('Error updating user preferences:', error);

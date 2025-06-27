@@ -403,6 +403,99 @@ body.dark-mode .privacy-note {
     margin-top: 0.5rem;
 }
 
+.success-message {
+    color: #2e7d32;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+/* OAuth Section */
+.oauth-section {
+    margin-top: 1.5rem;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0;
+    color: #666;
+    font-size: 0.875rem;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: #ddd;
+}
+
+.divider span {
+    padding: 0 1rem;
+}
+
+body.dark-mode .divider {
+    color: #b0b0b0;
+}
+
+body.dark-mode .divider::before,
+body.dark-mode .divider::after {
+    background-color: #555;
+}
+
+/* Google Sign-In Button */
+.btn-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    background-color: white;
+    color: #3c4043;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-google:hover:not(:disabled) {
+    background-color: #f8f9fa;
+    box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+}
+
+.btn-google:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+body.dark-mode .btn-google {
+    background-color: #4285f4;
+    color: white;
+    border-color: #4285f4;
+}
+
+body.dark-mode .btn-google:hover:not(:disabled) {
+    background-color: #357ae8;
+    border-color: #357ae8;
+}
+
+.google-icon {
+    font-size: 1.2rem;
+}
+
+/* Auth Links */
+.auth-links {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.auth-links .link-button {
+    margin: 0.5rem 0;
+}
+
 /* Empty State */
 .empty-state {
     text-align: center;

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import storageService from '../services/storage';
 import dataService from '../services/dataService';
 import MigrationBanner from '../components/MigrationBanner';
+import authService from '../services/authService';
 import { isFirebaseEnabled } from '../config/environment';
 
 function Dashboard() {
@@ -20,7 +21,8 @@ function Dashboard() {
     
     const calculateStats = async () => {
         try {
-            const entries = await dataService.getMigraines();
+            // Check if we're using Firebase or local storage
+            const entries = isFirebaseEnabled() ? await dataService.getMigraines() : storageService.getAllEntries();
         
         // Total count
         const total = entries.length;
@@ -98,7 +100,7 @@ function Dashboard() {
     
     return (
         <div className="dashboard-page">
-            {isFirebaseEnabled() && <MigrationBanner />}
+            {isFirebaseEnabled() && authService.isAuthenticated() && <MigrationBanner />}
             <h2>Dashboard</h2>
             <div className="stats-grid">
                 <div className="stat-card">

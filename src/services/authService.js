@@ -4,7 +4,9 @@ import {
   signOut,
   onAuthStateChanged,
   sendPasswordResetEmail,
-  updateProfile
+  updateProfile,
+  GoogleAuthProvider,
+  signInWithPopup
 } from 'firebase/auth';
 import { auth } from './firebase';
 
@@ -12,6 +14,7 @@ class AuthService {
   constructor() {
     this.currentUser = null;
     this.authStateListeners = [];
+    this.googleProvider = auth ? new GoogleAuthProvider() : null;
     
     // Only set up auth listener if Firebase is initialized
     if (auth) {
@@ -55,6 +58,18 @@ class AuthService {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       return { success: true, user: userCredential.user };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  async signInWithGoogle() {
+    if (!auth || !this.googleProvider) {
+      return { success: false, error: 'Google authentication is not available' };
+    }
+    try {
+      const result = await signInWithPopup(auth, this.googleProvider);
+      return { success: true, user: result.user };
     } catch (error) {
       return { success: false, error: error.message };
     }

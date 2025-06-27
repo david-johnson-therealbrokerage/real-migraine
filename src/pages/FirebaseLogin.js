@@ -52,6 +52,25 @@ function FirebaseLogin({ onLogin }) {
         }
     };
 
+    const handleGoogleSignIn = async () => {
+        setError('');
+        setLoading(true);
+
+        try {
+            const result = await authService.signInWithGoogle();
+            if (result.success) {
+                onLogin();
+                navigate('/');
+            } else {
+                setError(result.error);
+            }
+        } catch (err) {
+            setError('An unexpected error occurred. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const resetForm = () => {
         setEmail('');
         setPassword('');
@@ -129,6 +148,23 @@ function FirebaseLogin({ onLogin }) {
                         )}
                     </button>
                 </form>
+
+                {!isResetPassword && (
+                    <div className="oauth-section">
+                        <div className="divider">
+                            <span>OR</span>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={handleGoogleSignIn}
+                            className="btn-google"
+                            disabled={loading}
+                        >
+                            <span className="google-icon">🔵</span>
+                            Sign in with Google
+                        </button>
+                    </div>
+                )}
 
                 <div className="auth-links">
                     {!isResetPassword && (
