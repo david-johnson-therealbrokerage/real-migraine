@@ -3,8 +3,9 @@ const path = require('path');
 const fs = require('fs');
 
 async function captureMilestone() {
+    // Set headless: false to see what's happening during debugging
     const browser = await puppeteer.launch({
-        headless: 'new',
+        headless: process.env.DEBUG ? false : 'new',
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
     
@@ -38,19 +39,25 @@ async function captureMilestone() {
         // Check if we need to create a PIN (first time user)
         const isLoginPage = await page.$('.login-page');
         if (isLoginPage) {
-            console.log('2. Creating PIN for first-time user...');
+            console.log('2. Handling authentication...');
             
-            // Enter PIN
-            await page.type('input[type="password"]', '1234');
-            
-            // Check if we need to confirm PIN
+            // Check if this is a new user (confirm PIN field exists)
             const confirmInput = await page.$('input[placeholder="Confirm PIN"]');
+            
             if (confirmInput) {
-                await page.type('input[placeholder="Confirm PIN"]', '1234');
+                console.log('   Creating new PIN...');
+                // New user - create PIN
+                await page.type('input[type="password"]', '1234');
+                await confirmInput.type('1234');
+            } else {
+                console.log('   Entering existing PIN...');
+                // Existing user - just enter PIN
+                await page.type('input[type="password"]', '1234');
             }
             
             // Submit
             await page.click('button[type="submit"]');
+            await page.waitForSelector('.app-nav', { timeout: 5000 });
             await new Promise(resolve => setTimeout(resolve, 1000));
         }
         
@@ -193,36 +200,51 @@ async function captureMilestone() {
 }
 
 async function createMigraineEntry(page, data) {
-    // Clear and set dates
-    await page.evaluate(() => {
-        document.querySelector('input[type="date"]').value = '';
-    });
-    await page.type('input[type="date"]', data.startDate);
-    
-    await page.evaluate(() => {
-        document.querySelector('input[type="time"]').value = '';
-    });
-    await page.type('input[type="time"]', data.startTime);
-    
-    // Set end date/time if provided
-    if (data.endDate) {
-        const endDateInputs = await page.$$('input[type="date"]');
-        await page.evaluate((el) => el.value = '', endDateInputs[1]);
-        await endDateInputs[1].type(data.endDate);
+    try {
+        // Type slowly to ensure proper input
+        const typeOptions = { delay: 100 };
         
-        const endTimeInputs = await page.$$('input[type="time"]');
-        await page.evaluate((el) => el.value = '', endTimeInputs[1]);
-        await endTimeInputs[1].type(data.endTime);
-    }
+        // Clear and set start date
+        await page.evaluate(() => {
+            document.querySelector('input[type="date"]').value = '';
+        });
+        await page.type('input[type="date"]', data.startDate, typeOptions);
+        await new Promise(resolve => setTimeout(resolve, 200));
+    
+        // Set start time
+        await page.evaluate(() => {
+            document.querySelector('input[type="time"]').value = '';
+        });
+        await page.type('input[type="time"]', data.startTime, typeOptions);
+        await new Promise(resolve => setTimeout(resolve, 200));
+    
+        // Set end date/time if provided
+        if (data.endDate) {
+            const endDateInputs = await page.$$('input[type="date"]');
+            await page.evaluate((el) => el.value = '', endDateInputs[1]);
+            await endDateInputs[1].click(); // Focus the input first
+            await new Promise(resolve => setTimeout(resolve, 100));
+            await endDateInputs[1].type(data.endDate, typeOptions);
+            await new Promise(resolve => setTimeout(resolve, 200));
+            
+            const endTimeInputs = await page.$$('input[type="time"]');
+            await page.evaluate((el) => el.value = '', endTimeInputs[1]);
+            await endTimeInputs[1].click(); // Focus the input first
+            await new Promise(resolve => setTimeout(resolve, 100));
+            await endTimeInputs[1].type(data.endTime, typeOptions);
+            await new Promise(resolve => setTimeout(resolve, 200));
+        }
     
     // Set intensity
     await page.evaluate((intensity) => {
         document.querySelector('input[type="range"]').value = intensity;
         document.querySelector('input[type="range"]').dispatchEvent(new Event('change', { bubbles: true }));
     }, data.intensity);
+    await new Promise(resolve => setTimeout(resolve, 200));
     
     // Set location
     await page.select('select', data.location);
+    await new Promise(resolve => setTimeout(resolve, 200));
     
     // Set symptoms
     for (const symptom of data.symptoms) {
@@ -253,12 +275,20 @@ async function createMigraineEntry(page, data) {
     }
     
     // Add notes
-    await page.type('textarea', data.notes);
+    await page.type('textarea', data.notes, typeOptions);
+    await new Promise(resolve => setTimeout(resolve, 500));
     
     // Submit form
+    console.log('   Submitting entry...');
     await page.click('button[type="submit"]');
-    await page.waitForNavigation();
+    // Wait for navigation to history page (client-side routing)
+    await page.waitForSelector('.history-page', { timeout: 10000 });
     await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    } catch (error) {
+        console.error('Error creating migraine entry:', error);
+        throw error;
+    }
 }
 
 function getDateString(daysAgo) {

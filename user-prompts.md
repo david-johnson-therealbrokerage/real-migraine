@@ -139,3 +139,18 @@
 **Request:** npm run screenshot:milestone error - TypeError: page.waitForTimeout is not a function
 
 **Response:** Fixed Puppeteer script by replacing deprecated waitForTimeout with Promise-based setTimeout
+
+## Prompt 29
+**Request:** commit
+
+**Response:** Committed milestone capture automation script and MVP Phase 1 documentation
+
+## Prompt 30
+**Request:** npm run screenshot:milestone error - TimeoutError: Navigation timeout of 30000 ms exceeded
+
+**Response:** Fixed Puppeteer script to handle client-side routing, added error handling, and debug mode option
+
+## Prompt 31
+**Request:** endDate is partially entered. Please slow down data entry in capture-milestone.js
+
+**Response:** Added delays between inputs and slower typing speed (100ms per character) to ensure all form fields are properly filled
