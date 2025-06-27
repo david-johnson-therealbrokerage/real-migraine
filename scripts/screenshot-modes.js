@@ -96,7 +96,7 @@ async function captureAllModes(url, outputDir) {
 // Parse command line arguments
 const args = process.argv.slice(2);
 const url = args[0] || 'http://localhost:1234';
-const outputDir = args[1] || 'docs';
+const outputDir = args[1] || 'docs/screenshots';
 
 // Capture all screenshots
 captureAllModes(url, outputDir)

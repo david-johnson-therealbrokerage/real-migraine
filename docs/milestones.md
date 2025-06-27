@@ -15,8 +15,16 @@ This document tracks the development progress of the Migraine Tracker applicatio
 - Implemented dark mode toggle with localStorage persistence
 - Added responsive design foundation
 
-### Screenshot:
-![Initial App](./screenshot-initial-app.png)
+### Screenshots:
+
+#### Light Mode:
+![Light Mode](./screenshots/screenshot-light-mode.png)
+
+#### Dark Mode:
+![Dark Mode](./screenshots/screenshot-dark-mode.png)
+
+#### Mobile View:
+![Mobile View](./screenshots/screenshot-mobile.png)
 
 ### Key Features Implemented:
 - ✅ Dark/Light mode toggle

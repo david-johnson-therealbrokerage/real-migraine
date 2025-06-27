@@ -39,3 +39,13 @@
 **Request:** use puppetter to export web url images
 
 **Response:** Installed Puppeteer and created screenshot scripts with multiple capture modes (light, dark, mobile)
+
+## Prompt 9
+**Request:** replace milesteones.md milestone 1 screenshots with the new light, dark, and mobile screenshots
+
+**Response:** Updated milestones.md to show all three screenshot modes (light, dark, mobile)
+
+## Prompt 10
+**Request:** move screenshots from docs/ to docs/screenshots
+
+**Response:** Moved all screenshots to docs/screenshots/ subdirectory and updated references
