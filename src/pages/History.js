@@ -6,19 +6,27 @@ function History() {
     const navigate = useNavigate();
     const [entries, setEntries] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
     
     useEffect(() => {
         loadEntries();
     }, []);
     
     const loadEntries = () => {
-        const allEntries = storageService.getAllEntries();
-        // Sort by most recent first
-        const sortedEntries = allEntries.sort((a, b) => 
-            new Date(b.startDateTime) - new Date(a.startDateTime)
-        );
-        setEntries(sortedEntries);
-        setLoading(false);
+        try {
+            const allEntries = storageService.getAllEntries();
+            // Sort by most recent first
+            const sortedEntries = allEntries.sort((a, b) => 
+                new Date(b.startDateTime) - new Date(a.startDateTime)
+            );
+            setEntries(sortedEntries);
+            setError('');
+        } catch (err) {
+            console.error('Error loading entries:', err);
+            setError('Failed to load entries. Please refresh the page.');
+        } finally {
+            setLoading(false);
+        }
     };
     
     const formatDateTime = (dateTimeStr) => {
@@ -45,11 +53,18 @@ function History() {
     
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this entry?')) {
-            const success = storageService.deleteEntry(id);
-            if (success) {
-                loadEntries();
-            } else {
-                alert('Failed to delete entry');
+            try {
+                const success = storageService.deleteEntry(id);
+                if (success) {
+                    loadEntries();
+                } else {
+                    throw new Error('Failed to delete entry');
+                }
+            } catch (err) {
+                console.error('Error deleting entry:', err);
+                setError('Failed to delete entry. Please try again.');
+                // Clear error after 5 seconds
+                setTimeout(() => setError(''), 5000);
             }
         }
     };
@@ -62,6 +77,12 @@ function History() {
                     + New Entry
                 </Link>
             </div>
+
+            {error && (
+                <div className="error-message" role="alert">
+                    {error}
+                </div>
+            )}
 
             {loading ? (
                 <div className="loading">Loading entries...</div>

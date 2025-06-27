@@ -1,0 +1,65 @@
+.error-boundary {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background-color: var(--bg-primary);
+}
+
+.error-content {
+    max-width: 600px;
+    text-align: center;
+    background-color: var(--bg-secondary);
+    padding: 3rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.error-content h1 {
+    color: #dc3545;
+    margin-bottom: 1rem;
+}
+
+.error-content p {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+.error-details {
+    text-align: left;
+    margin: 2rem 0;
+    padding: 1rem;
+    background-color: var(--bg-primary);
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+
+.error-details summary {
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.error-details pre {
+    overflow-x: auto;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .error-actions {
+        flex-direction: column;
+    }
+    
+    .error-actions button {
+        width: 100%;
+    }
+}

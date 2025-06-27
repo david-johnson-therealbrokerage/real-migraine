@@ -4,6 +4,8 @@ import storageService from '../services/storage';
 
 function NewEntry() {
     const navigate = useNavigate();
+    const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState({
         startDate: new Date().toISOString().split('T')[0],
         startTime: new Date().toTimeString().split(' ')[0].slice(0, 5),
@@ -30,33 +32,64 @@ function NewEntry() {
         'Left Side', 'Right Side', 'Both Sides', 'Front', 'Back', 'Behind Eyes'
     ];
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+        setIsSubmitting(true);
         
-        // Calculate duration if end date/time provided
-        let duration = null;
-        if (formData.endDate && formData.endTime) {
-            const start = new Date(`${formData.startDate}T${formData.startTime}`);
-            const end = new Date(`${formData.endDate}T${formData.endTime}`);
-            duration = Math.round((end - start) / (1000 * 60)); // duration in minutes
-        }
-        
-        const entry = {
-            startDateTime: `${formData.startDate}T${formData.startTime}`,
-            endDateTime: formData.endDate && formData.endTime ? `${formData.endDate}T${formData.endTime}` : null,
-            duration,
-            intensity: formData.intensity,
-            location: formData.location,
-            symptoms: formData.symptoms,
-            triggers: formData.triggers,
-            notes: formData.notes
-        };
-        
-        const savedEntry = storageService.saveEntry(entry);
-        if (savedEntry) {
-            navigate('/history');
-        } else {
-            alert('Failed to save entry. Please try again.');
+        try {
+            // Validate form data
+            if (!formData.startDate || !formData.startTime) {
+                throw new Error('Start date and time are required');
+            }
+            
+            // Validate end time is after start time if provided
+            if (formData.endDate && formData.endTime) {
+                const start = new Date(`${formData.startDate}T${formData.startTime}`);
+                const end = new Date(`${formData.endDate}T${formData.endTime}`);
+                if (end <= start) {
+                    throw new Error('End time must be after start time');
+                }
+            }
+            
+            // Calculate duration if end date/time provided
+            let duration = null;
+            if (formData.endDate && formData.endTime) {
+                const start = new Date(`${formData.startDate}T${formData.startTime}`);
+                const end = new Date(`${formData.endDate}T${formData.endTime}`);
+                duration = Math.round((end - start) / (1000 * 60)); // duration in minutes
+            }
+            
+            const entry = {
+                startDateTime: `${formData.startDate}T${formData.startTime}`,
+                endDateTime: formData.endDate && formData.endTime ? `${formData.endDate}T${formData.endTime}` : null,
+                duration,
+                intensity: formData.intensity,
+                location: formData.location,
+                symptoms: formData.symptoms,
+                triggers: formData.triggers,
+                notes: formData.notes
+            };
+            
+            // Check storage capacity before saving
+            const storageInfo = storageService.getStorageInfo();
+            if (storageInfo && storageInfo.isNearLimit) {
+                if (!window.confirm('Storage is nearly full. Continue saving?')) {
+                    setIsSubmitting(false);
+                    return;
+                }
+            }
+            
+            const savedEntry = storageService.saveEntry(entry);
+            if (savedEntry) {
+                navigate('/history');
+            } else {
+                throw new Error('Failed to save entry');
+            }
+        } catch (err) {
+            console.error('Error saving entry:', err);
+            setError(err.message || 'Failed to save entry. Please try again.');
+            setIsSubmitting(false);
         }
     };
 
@@ -67,6 +100,13 @@ function NewEntry() {
     return (
         <div className="new-entry-page">
             <h2>New Migraine Entry</h2>
+            
+            {error && (
+                <div className="error-message" role="alert">
+                    {error}
+                </div>
+            )}
+            
             <form onSubmit={handleSubmit} className="migraine-form">
                 <div className="form-group">
                     <label>Start Date & Time</label>
@@ -188,11 +228,11 @@ function NewEntry() {
                 </div>
 
                 <div className="form-buttons">
-                    <button type="button" onClick={handleCancel} className="btn-secondary">
+                    <button type="button" onClick={handleCancel} className="btn-secondary" disabled={isSubmitting}>
                         Cancel
                     </button>
-                    <button type="submit" className="btn-primary">
-                        Save Entry
+                    <button type="submit" className="btn-primary" disabled={isSubmitting}>
+                        {isSubmitting ? 'Saving...' : 'Save Entry'}
                     </button>
                 </div>
             </form>

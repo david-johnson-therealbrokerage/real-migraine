@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import './styles/App.css';
 import storageService from './services/storage';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Pages
 import Login from './pages/Login';
@@ -9,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import NewEntry from './pages/NewEntry';
 import History from './pages/History';
 import EditEntry from './pages/EditEntry';
+import Settings from './pages/Settings';
 
 function App() {
     const [darkMode, setDarkMode] = useState(() => {
@@ -47,8 +49,9 @@ function App() {
     }
 
     return (
-        <Router>
-            <div className="app">
+        <ErrorBoundary>
+            <Router>
+                <div className="app">
                 {isAuthenticated && (
                     <header className="app-header">
                         <Link to="/" className="app-title">
@@ -58,6 +61,7 @@ function App() {
                             <Link to="/" className="nav-link">Dashboard</Link>
                             <Link to="/new" className="nav-link">New Entry</Link>
                             <Link to="/history" className="nav-link">History</Link>
+                            <Link to="/settings" className="nav-link">Settings</Link>
                         </nav>
                         <div className="header-actions">
                             <button 
@@ -93,6 +97,7 @@ function App() {
                                 <Route path="/new" element={<NewEntry />} />
                                 <Route path="/history" element={<History />} />
                                 <Route path="/edit/:id" element={<EditEntry />} />
+                                <Route path="/settings" element={<Settings />} />
                                 <Route path="/login" element={<Navigate to="/" />} />
                             </>
                         )}
@@ -100,6 +105,7 @@ function App() {
                 </main>
             </div>
         </Router>
+        </ErrorBoundary>
     );
 }
 

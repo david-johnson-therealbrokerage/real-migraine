@@ -1,0 +1,197 @@
+.settings-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.settings-page h1 {
+    margin-bottom: 2rem;
+    color: var(--text-primary);
+}
+
+.settings-section {
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.settings-section h2 {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+}
+
+.button-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-secondary {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #218838;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-import {
+    background-color: #6f42c1;
+    color: white;
+}
+
+.btn-import:hover {
+    background-color: #5a32a3;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.storage-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.warning {
+    color: #ff6b6b;
+    font-weight: bold;
+}
+
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    border: 1px solid #c3e6cb;
+}
+
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    border: 1px solid #f5c6cb;
+}
+
+.warning-message {
+    background-color: #fff3cd;
+    color: #856404;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-top: 1rem;
+    border: 1px solid #ffeeba;
+}
+
+.danger-zone {
+    border: 2px solid #dc3545;
+}
+
+/* Dark mode support */
+body.dark-mode .btn-primary {
+    background-color: #0d6efd;
+    color: white;
+}
+
+body.dark-mode .btn-primary:hover {
+    background-color: #0b5ed7;
+}
+
+body.dark-mode .btn-secondary {
+    background-color: #198754;
+    color: white;
+}
+
+body.dark-mode .btn-secondary:hover {
+    background-color: #157347;
+}
+
+body.dark-mode .btn-import {
+    background-color: #6f42c1;
+    color: white;
+}
+
+body.dark-mode .btn-import:hover {
+    background-color: #5a32a3;
+}
+
+body.dark-mode .success-message {
+    background-color: #1a4d2e;
+    color: #a8d5ba;
+    border-color: #2d6a4f;
+}
+
+body.dark-mode .error-message {
+    background-color: #5c1e1e;
+    color: #f5a5a5;
+    border-color: #8b3030;
+}
+
+body.dark-mode .warning-message {
+    background-color: #5c4a1a;
+    color: #ffd166;
+    border-color: #8b6914;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .settings-page {
+        padding: 1rem;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+}

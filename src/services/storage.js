@@ -2,6 +2,7 @@ const STORAGE_KEYS = {
     ENTRIES: 'migraine_entries',
     USER_PREFERENCES: 'user_preferences',
     AUTH_CREDENTIALS: 'auth_credentials',
+    PIN_HASH: 'pin_hash', // For compatibility with existing PIN storage
     SCHEMA_VERSION: 'schema_version'
 };
 
@@ -143,42 +144,157 @@ class StorageService {
 
     // Export/Import Methods
     exportData() {
-        return {
-            version: CURRENT_SCHEMA_VERSION,
-            exportDate: new Date().toISOString(),
-            entries: this.getAllEntries(),
-            preferences: this.getPreferences()
-        };
+        try {
+            const data = {
+                version: CURRENT_SCHEMA_VERSION,
+                exportDate: new Date().toISOString(),
+                entries: this.getAllEntries(),
+                preferences: this.getPreferences(),
+                // Include PIN hash for complete backup
+                pinHash: localStorage.getItem(STORAGE_KEYS.PIN_HASH)
+            };
+            return JSON.stringify(data, null, 2);
+        } catch (error) {
+            console.error('Error exporting data:', error);
+            throw new Error('Failed to export data');
+        }
     }
 
-    importData(data) {
-        if (!data || !data.version) {
-            throw new Error('Invalid import data format');
-        }
+    importData(jsonString) {
+        try {
+            const data = JSON.parse(jsonString);
+            
+            // Validate import data
+            if (!data || !data.version) {
+                throw new Error('Invalid backup file format');
+            }
 
-        // Validate and import entries
-        if (data.entries && Array.isArray(data.entries)) {
-            this.set(STORAGE_KEYS.ENTRIES, data.entries);
-        }
+            // Backup current data before import
+            const currentEntries = this.getAllEntries();
+            const currentPrefs = this.getPreferences();
+            
+            try {
+                // Import entries
+                if (data.entries && Array.isArray(data.entries)) {
+                    this.set(STORAGE_KEYS.ENTRIES, data.entries);
+                }
 
-        // Import preferences
-        if (data.preferences) {
-            this.set(STORAGE_KEYS.USER_PREFERENCES, data.preferences);
+                // Import preferences
+                if (data.preferences) {
+                    this.set(STORAGE_KEYS.USER_PREFERENCES, data.preferences);
+                }
+                
+                // Import PIN if provided
+                if (data.pinHash) {
+                    localStorage.setItem(STORAGE_KEYS.PIN_HASH, data.pinHash);
+                }
+                
+                return {
+                    success: true,
+                    importedCount: data.entries ? data.entries.length : 0,
+                    message: `Successfully imported ${data.entries ? data.entries.length : 0} entries`
+                };
+            } catch (importError) {
+                // Restore backup on failure
+                this.set(STORAGE_KEYS.ENTRIES, currentEntries);
+                this.set(STORAGE_KEYS.USER_PREFERENCES, currentPrefs);
+                throw importError;
+            }
+        } catch (error) {
+            console.error('Error importing data:', error);
+            throw new Error('Failed to import data: ' + error.message);
         }
+    }
 
-        return true;
+    // Export as CSV for medical providers
+    exportCSV() {
+        try {
+            const entries = this.getAllEntries();
+            
+            if (entries.length === 0) {
+                return '';
+            }
+
+            // CSV headers
+            const headers = [
+                'Start Date',
+                'Start Time',
+                'End Date',
+                'End Time',
+                'Duration (hours)',
+                'Intensity (1-10)',
+                'Location',
+                'Symptoms',
+                'Triggers',
+                'Notes'
+            ];
+
+            // Convert entries to CSV rows
+            const rows = entries.map(entry => {
+                const startDate = new Date(entry.startDateTime);
+                const endDate = entry.endDateTime ? new Date(entry.endDateTime) : null;
+                const duration = entry.duration ? (entry.duration / 60).toFixed(1) : '';
+
+                return [
+                    startDate.toLocaleDateString(),
+                    startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    endDate ? endDate.toLocaleDateString() : '',
+                    endDate ? endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
+                    duration,
+                    entry.intensity || '',
+                    entry.location || '',
+                    (entry.symptoms || []).join('; '),
+                    (entry.triggers || []).join('; '),
+                    (entry.notes || '').replace(/"/g, '""') // Escape quotes in notes
+                ];
+            });
+
+            // Combine headers and rows
+            const csvContent = [
+                headers.join(','),
+                ...rows.map(row => 
+                    row.map(cell => `"${cell}"`).join(',')
+                )
+            ].join('\n');
+
+            return csvContent;
+        } catch (error) {
+            console.error('Error exporting CSV:', error);
+            throw new Error('Failed to export CSV');
+        }
     }
 
     // Storage usage info
     getStorageInfo() {
-        const usage = new Blob(Object.values(localStorage)).size;
-        const usageInKB = (usage / 1024).toFixed(2);
-        return {
-            usage: usageInKB + ' KB',
-            entriesCount: this.getAllEntries().length,
-            // Most browsers have 5-10MB limit
-            estimatedCapacity: '5 MB'
-        };
+        try {
+            const entries = this.getAllEntries();
+            const allData = JSON.stringify(localStorage);
+            const dataSize = new Blob([allData]).size;
+            const maxSize = 5 * 1024 * 1024; // 5MB typical localStorage limit
+            
+            return {
+                entriesCount: entries.length,
+                dataSize: dataSize,
+                dataSizeFormatted: this.formatBytes(dataSize),
+                maxSize: maxSize,
+                maxSizeFormatted: this.formatBytes(maxSize),
+                usagePercentage: ((dataSize / maxSize) * 100).toFixed(1),
+                remainingSpace: maxSize - dataSize,
+                remainingSpaceFormatted: this.formatBytes(maxSize - dataSize),
+                isNearLimit: dataSize > (maxSize * 0.8) // Warning if over 80%
+            };
+        } catch (error) {
+            console.error('Error getting storage info:', error);
+            return null;
+        }
+    }
+
+    formatBytes(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
     clearAllData() {

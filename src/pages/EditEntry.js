@@ -7,6 +7,7 @@ function EditEntry() {
     const { id } = useParams();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState({
         startDate: '',
         startTime: '',
@@ -78,34 +79,56 @@ function EditEntry() {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+        setIsSubmitting(true);
         
-        // Calculate duration if end date/time provided
-        let duration = null;
-        if (formData.endDate && formData.endTime) {
-            const start = new Date(`${formData.startDate}T${formData.startTime}`);
-            const end = new Date(`${formData.endDate}T${formData.endTime}`);
-            duration = Math.round((end - start) / (1000 * 60)); // duration in minutes
-        }
-        
-        const updatedEntry = {
-            id, // Keep the same ID
-            startDateTime: `${formData.startDate}T${formData.startTime}`,
-            endDateTime: formData.endDate && formData.endTime ? `${formData.endDate}T${formData.endTime}` : null,
-            duration,
-            intensity: formData.intensity,
-            location: formData.location,
-            symptoms: formData.symptoms,
-            triggers: formData.triggers,
-            notes: formData.notes
-        };
-        
-        const savedEntry = storageService.saveEntry(updatedEntry);
-        if (savedEntry) {
-            navigate('/history');
-        } else {
-            alert('Failed to save entry. Please try again.');
+        try {
+            // Validate form data
+            if (!formData.startDate || !formData.startTime) {
+                throw new Error('Start date and time are required');
+            }
+            
+            // Validate end time is after start time if provided
+            if (formData.endDate && formData.endTime) {
+                const start = new Date(`${formData.startDate}T${formData.startTime}`);
+                const end = new Date(`${formData.endDate}T${formData.endTime}`);
+                if (end <= start) {
+                    throw new Error('End time must be after start time');
+                }
+            }
+            
+            // Calculate duration if end date/time provided
+            let duration = null;
+            if (formData.endDate && formData.endTime) {
+                const start = new Date(`${formData.startDate}T${formData.startTime}`);
+                const end = new Date(`${formData.endDate}T${formData.endTime}`);
+                duration = Math.round((end - start) / (1000 * 60)); // duration in minutes
+            }
+            
+            const updatedEntry = {
+                id, // Keep the same ID
+                startDateTime: `${formData.startDate}T${formData.startTime}`,
+                endDateTime: formData.endDate && formData.endTime ? `${formData.endDate}T${formData.endTime}` : null,
+                duration,
+                intensity: formData.intensity,
+                location: formData.location,
+                symptoms: formData.symptoms,
+                triggers: formData.triggers,
+                notes: formData.notes
+            };
+            
+            const savedEntry = storageService.saveEntry(updatedEntry);
+            if (savedEntry) {
+                navigate('/history');
+            } else {
+                throw new Error('Failed to save entry');
+            }
+        } catch (err) {
+            console.error('Error saving entry:', err);
+            setError(err.message || 'Failed to save entry. Please try again.');
+            setIsSubmitting(false);
         }
     };
 
@@ -253,11 +276,11 @@ function EditEntry() {
                 </div>
 
                 <div className="form-buttons">
-                    <button type="button" onClick={handleCancel} className="btn-secondary">
+                    <button type="button" onClick={handleCancel} className="btn-secondary" disabled={isSubmitting}>
                         Cancel
                     </button>
-                    <button type="submit" className="btn-primary">
-                        Save Changes
+                    <button type="submit" className="btn-primary" disabled={isSubmitting}>
+                        {isSubmitting ? 'Saving...' : 'Save Changes'}
                     </button>
                 </div>
             </form>
