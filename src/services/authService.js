@@ -9,6 +9,7 @@ import {
   signInWithPopup
 } from 'firebase/auth';
 import { auth } from './firebase';
+import firestoreService from './firestoreService';
 
 class AuthService {
   constructor() {
@@ -18,8 +19,22 @@ class AuthService {
     
     // Only set up auth listener if Firebase is initialized
     if (auth) {
-      onAuthStateChanged(auth, (user) => {
+      onAuthStateChanged(auth, async (user) => {
         this.currentUser = user;
+        
+        // Initialize user document in Firestore if user just signed in and Firestore is available
+        if (user && firestoreService.isAvailable) {
+          try {
+            await firestoreService.initializeUserDocument(user.uid, {
+              email: user.email,
+              displayName: user.displayName || ''
+            });
+          } catch (error) {
+            // Don't let initialization errors block the auth flow
+            console.warn('Could not initialize user document:', error);
+          }
+        }
+        
         this.notifyListeners(user);
       });
     }

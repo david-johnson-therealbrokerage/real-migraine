@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import storageService from '../services/storage';
 import dataService from '../services/dataService';
 import MigrationBanner from '../components/MigrationBanner';
+import FirestoreStatus from '../components/FirestoreStatus';
 import authService from '../services/authService';
 import { isFirebaseEnabled } from '../config/environment';
 
@@ -122,7 +123,12 @@ function Dashboard() {
     
     return (
         <div className="dashboard-page">
-            {isFirebaseEnabled() && authService.isAuthenticated() && <MigrationBanner />}
+            {isFirebaseEnabled() && authService.isAuthenticated() && (
+                <>
+                    <FirestoreStatus />
+                    <MigrationBanner />
+                </>
+            )}
             <h2>Dashboard</h2>
             <div className="stats-grid">
                 <div className="stat-card">

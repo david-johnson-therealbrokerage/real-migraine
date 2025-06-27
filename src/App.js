@@ -15,6 +15,7 @@ import NewEntry from './pages/NewEntry';
 import History from './pages/History';
 import EditEntry from './pages/EditEntry';
 import Settings from './pages/Settings';
+import Profile from './pages/Profile';
 
 function App() {
     const [darkMode, setDarkMode] = useState(() => {
@@ -85,6 +86,7 @@ function App() {
                             <Link to="/new" className="nav-link">New Entry</Link>
                             <Link to="/history" className="nav-link">History</Link>
                             <Link to="/settings" className="nav-link">Settings</Link>
+                            {useFirebase && <Link to="/profile" className="nav-link">Profile</Link>}
                         </nav>
                         <div className="header-actions">
                             <button 
@@ -94,6 +96,11 @@ function App() {
                             >
                                 {darkMode ? '☀️' : '🌙'}
                             </button>
+                            {useFirebase && currentUser && (
+                                <Link to="/profile" className="user-icon" title={currentUser.email || 'Profile'}>
+                                    👤
+                                </Link>
+                            )}
                             {(useFirebase || storageService.hasPin()) && (
                                 <button 
                                     className="logout-btn"
@@ -127,6 +134,7 @@ function App() {
                                 <Route path="/history" element={<History />} />
                                 <Route path="/edit/:id" element={<EditEntry />} />
                                 <Route path="/settings" element={<Settings />} />
+                                <Route path="/profile" element={<Profile />} />
                                 <Route path="/login" element={<Navigate to="/" />} />
                             </>
                         )}

@@ -13,8 +13,12 @@ if (isFirebaseEnabled()) {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     db = getFirestore(app);
+    
+    // Log successful initialization
+    console.log('Firebase initialized successfully');
   } catch (error) {
     console.error('Firebase initialization error:', error);
+    console.warn('The app will continue to work with local storage only.');
   }
 }
 
