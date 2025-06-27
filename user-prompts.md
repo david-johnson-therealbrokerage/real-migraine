@@ -49,3 +49,8 @@
 **Request:** move screenshots from docs/ to docs/screenshots
 
 **Response:** Moved all screenshots to docs/screenshots/ subdirectory and updated references
+
+## Prompt 11
+**Request:** I'm now adding firebase hosting. Please log that I am executing `firebase login` `firebase init` and `firebase deploy` from the command line. Please add an `npm run deploy` step that runs parcel build then asks to confirm, then runs firebase deploy
+
+**Response:** Logged Firebase setup commands and created npm deploy script with confirmation prompt

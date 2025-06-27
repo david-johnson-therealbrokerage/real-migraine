@@ -34,6 +34,26 @@ npm start
 
 # Build for production
 npm run build
+
+# Deploy to Firebase Hosting
+npm run deploy
+
+# Take screenshots
+npm run screenshot <url> <output-path>
+npm run screenshot:all
+```
+
+## Firebase Setup Commands (User Executed)
+
+```bash
+# Authenticate with Firebase
+firebase login
+
+# Initialize Firebase project
+firebase init
+
+# Manual deployment
+firebase deploy
 ```
 
 ## Project Structure (Planned)
