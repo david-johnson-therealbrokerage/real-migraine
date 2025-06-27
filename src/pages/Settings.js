@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import storage from '../services/storage';
+import dataService from '../services/dataService';
 import './Settings.css';
 
 function Settings() {
@@ -108,6 +109,109 @@ function Settings() {
         navigate('/login');
     };
 
+    const generateSeedData = async () => {
+        if (window.confirm('This will create 30 sample migraine entries over the last 3 months. Continue?')) {
+            try {
+                const symptoms = [
+                    'Nausea', 'Light Sensitivity', 'Sound Sensitivity', 
+                    'Aura', 'Dizziness', 'Fatigue', 'Neck Pain'
+                ];
+                
+                const triggers = [
+                    'Stress', 'Lack of Sleep', 'Weather', 'Food', 
+                    'Dehydration', 'Screen Time', 'Hormones', 'Exercise'
+                ];
+                
+                const locations = [
+                    'Left Side', 'Right Side', 'Both Sides', 'Front', 'Back', 'Behind Eyes'
+                ];
+                
+                const notes = [
+                    'Took medication early, helped reduce severity',
+                    'Weather change seemed to trigger this one',
+                    'Started during work meeting',
+                    'Woke up with migraine',
+                    'Gradual onset throughout the day',
+                    'Very sudden onset',
+                    'Medication was effective',
+                    'Had to lie down in dark room',
+                    'Missed work due to severity',
+                    ''
+                ];
+                
+                const seedEntries = [];
+                const now = new Date();
+                
+                for (let i = 0; i < 30; i++) {
+                    // Random date within last 3 months
+                    const daysAgo = Math.floor(Math.random() * 90);
+                    const startDate = new Date(now);
+                    startDate.setDate(startDate.getDate() - daysAgo);
+                    
+                    // Random time of day
+                    startDate.setHours(Math.floor(Math.random() * 24));
+                    startDate.setMinutes(Math.floor(Math.random() * 60));
+                    
+                    // Random duration between 30 minutes and 48 hours
+                    const duration = Math.floor(Math.random() * (48 * 60 - 30) + 30);
+                    
+                    const endDate = new Date(startDate);
+                    endDate.setMinutes(endDate.getMinutes() + duration);
+                    
+                    // Random intensity weighted towards middle values
+                    const intensityWeights = [1, 2, 3, 4, 5, 5, 6, 6, 7, 7, 8, 9, 10];
+                    const intensity = intensityWeights[Math.floor(Math.random() * intensityWeights.length)];
+                    
+                    // Random symptoms (1-4)
+                    const numSymptoms = Math.floor(Math.random() * 4) + 1;
+                    const selectedSymptoms = [];
+                    const symptomsCopy = [...symptoms];
+                    for (let j = 0; j < numSymptoms; j++) {
+                        const index = Math.floor(Math.random() * symptomsCopy.length);
+                        selectedSymptoms.push(symptomsCopy[index]);
+                        symptomsCopy.splice(index, 1);
+                    }
+                    
+                    // Random triggers (1-3)
+                    const numTriggers = Math.floor(Math.random() * 3) + 1;
+                    const selectedTriggers = [];
+                    const triggersCopy = [...triggers];
+                    for (let j = 0; j < numTriggers; j++) {
+                        const index = Math.floor(Math.random() * triggersCopy.length);
+                        selectedTriggers.push(triggersCopy[index]);
+                        triggersCopy.splice(index, 1);
+                    }
+                    
+                    const entry = {
+                        startDateTime: startDate.toISOString(),
+                        endDateTime: endDate.toISOString(),
+                        duration: duration,
+                        intensity: intensity,
+                        location: locations[Math.floor(Math.random() * locations.length)],
+                        symptoms: selectedSymptoms,
+                        triggers: selectedTriggers,
+                        notes: notes[Math.floor(Math.random() * notes.length)]
+                    };
+                    
+                    seedEntries.push(entry);
+                }
+                
+                // Sort by date (oldest first) for more realistic addition
+                seedEntries.sort((a, b) => new Date(a.startDateTime) - new Date(b.startDateTime));
+                
+                // Add all entries
+                for (const entry of seedEntries) {
+                    await dataService.addMigraine(entry);
+                }
+                
+                showMessage(`Successfully created ${seedEntries.length} sample migraine entries!`);
+                updateStorageInfo();
+            } catch (err) {
+                showMessage('Failed to generate seed data: ' + err.message, true);
+            }
+        }
+    };
+
     return (
         <div className="settings-page">
             <h1>Settings</h1>
@@ -163,6 +267,14 @@ function Settings() {
                         )}
                     </div>
                 )}
+            </section>
+
+            <section className="settings-section">
+                <h2>Development Tools</h2>
+                <p>Generate sample data for testing and demonstration purposes.</p>
+                <button onClick={generateSeedData} className="btn btn-secondary">
+                    🌱 Generate Seed Data
+                </button>
             </section>
 
             <section className="settings-section danger-zone">
