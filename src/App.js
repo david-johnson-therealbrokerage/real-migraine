@@ -1,52 +1,103 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import './styles/App.css';
+import storageService from './services/storage';
+
+// Pages
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import NewEntry from './pages/NewEntry';
+import History from './pages/History';
 
 function App() {
     const [darkMode, setDarkMode] = useState(() => {
-        const saved = localStorage.getItem('darkMode');
-        return saved ? JSON.parse(saved) : false;
+        const preferences = storageService.getPreferences();
+        return preferences.darkMode || false;
     });
+    
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        // Check if user has set up a PIN
+        const hasPin = storageService.hasPin();
+        if (!hasPin) {
+            setIsAuthenticated(true); // No PIN required yet
+        }
+        setIsLoading(false);
+    }, []);
 
     useEffect(() => {
         document.body.classList.toggle('dark-mode', darkMode);
-        localStorage.setItem('darkMode', JSON.stringify(darkMode));
+        const preferences = storageService.getPreferences();
+        storageService.savePreferences({ ...preferences, darkMode });
     }, [darkMode]);
 
+    const handleLogin = () => {
+        setIsAuthenticated(true);
+    };
+
+    const handleLogout = () => {
+        setIsAuthenticated(false);
+    };
+
+    if (isLoading) {
+        return <div className="loading">Loading...</div>;
+    }
+
     return (
-        <div className="app">
-            <header className="app-header">
-                <h1>Migraine Tracker</h1>
-                <button 
-                    className="theme-toggle"
-                    onClick={() => setDarkMode(!darkMode)}
-                    aria-label="Toggle dark mode"
-                >
-                    {darkMode ? '☀️' : '🌙'}
-                </button>
-            </header>
-            
-            <main className="app-main">
-                <div className="welcome-container">
-                    <h2>Welcome to Migraine Tracker</h2>
-                    <p>Track your migraines to better understand patterns and triggers.</p>
-                    
-                    <div className="feature-list">
-                        <div className="feature-card">
-                            <h3>📝 Log Migraines</h3>
-                            <p>Record intensity, duration, symptoms, and triggers</p>
+        <Router>
+            <div className="app">
+                {isAuthenticated && (
+                    <header className="app-header">
+                        <Link to="/" className="app-title">
+                            <h1>Migraine Tracker</h1>
+                        </Link>
+                        <nav className="app-nav">
+                            <Link to="/" className="nav-link">Dashboard</Link>
+                            <Link to="/new" className="nav-link">New Entry</Link>
+                            <Link to="/history" className="nav-link">History</Link>
+                        </nav>
+                        <div className="header-actions">
+                            <button 
+                                className="theme-toggle"
+                                onClick={() => setDarkMode(!darkMode)}
+                                aria-label="Toggle dark mode"
+                            >
+                                {darkMode ? '☀️' : '🌙'}
+                            </button>
+                            {storageService.hasPin() && (
+                                <button 
+                                    className="logout-btn"
+                                    onClick={handleLogout}
+                                    aria-label="Logout"
+                                >
+                                    🔒
+                                </button>
+                            )}
                         </div>
-                        <div className="feature-card">
-                            <h3>📊 View Analytics</h3>
-                            <p>Understand patterns and frequency</p>
-                        </div>
-                        <div className="feature-card">
-                            <h3>💾 Local Storage</h3>
-                            <p>Your data stays private on your device</p>
-                        </div>
-                    </div>
-                </div>
-            </main>
-        </div>
+                    </header>
+                )}
+                
+                <main className="app-main">
+                    <Routes>
+                        {!isAuthenticated ? (
+                            <>
+                                <Route path="/login" element={<Login onLogin={handleLogin} />} />
+                                <Route path="*" element={<Navigate to="/login" />} />
+                            </>
+                        ) : (
+                            <>
+                                <Route path="/" element={<Dashboard />} />
+                                <Route path="/new" element={<NewEntry />} />
+                                <Route path="/history" element={<History />} />
+                                <Route path="/login" element={<Navigate to="/" />} />
+                            </>
+                        )}
+                    </Routes>
+                </main>
+            </div>
+        </Router>
     );
 }
 
