@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import storageService from '../services/storage';
+import dataService from '../services/dataService';
 
 function EditEntry() {
     const navigate = useNavigate();
@@ -38,18 +38,18 @@ function EditEntry() {
         loadEntry();
     }, [id]);
 
-    const loadEntry = () => {
-        console.log('Loading entry with ID:', id);
-        const entry = storageService.getEntry(id);
-        console.log('Found entry:', entry);
-        
-        if (!entry) {
-            setError('Entry not found');
-            setLoading(false);
-            return;
-        }
-
+    const loadEntry = async () => {
         try {
+            console.log('Loading entry with ID:', id);
+            const entry = await dataService.getMigraineById(id);
+            console.log('Found entry:', entry);
+            
+            if (!entry) {
+                setError('Entry not found');
+                setLoading(false);
+                return;
+            }
+
             // Parse the entry data for the form
             const startDateTime = new Date(entry.startDateTime);
             const formData = {
@@ -119,12 +119,8 @@ function EditEntry() {
                 notes: formData.notes
             };
             
-            const savedEntry = storageService.saveEntry(updatedEntry);
-            if (savedEntry) {
-                navigate('/history');
-            } else {
-                throw new Error('Failed to save entry');
-            }
+            await dataService.updateMigraine(id, updatedEntry);
+            navigate('/history');
         } catch (err) {
             console.error('Error saving entry:', err);
             setError(err.message || 'Failed to save entry. Please try again.');

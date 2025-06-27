@@ -304,6 +304,56 @@ class StorageService {
         this.set(STORAGE_KEYS.SCHEMA_VERSION, version);
         this.initializeStorage();
     }
+
+    // Alias methods to match dataService interface
+    getMigraines() {
+        return this.getAllEntries();
+    }
+
+    addMigraine(migraineData) {
+        const entry = {
+            ...migraineData,
+            id: Date.now().toString(),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+        const entries = this.getAllEntries();
+        entries.push(entry);
+        this.set(STORAGE_KEYS.ENTRIES, entries);
+        return entry;
+    }
+
+    updateMigraine(id, updateData) {
+        const entries = this.getAllEntries();
+        const index = entries.findIndex(e => e.id === id);
+        if (index === -1) {
+            throw new Error('Entry not found');
+        }
+        entries[index] = {
+            ...entries[index],
+            ...updateData,
+            id, // Preserve the ID
+            updatedAt: new Date().toISOString()
+        };
+        this.set(STORAGE_KEYS.ENTRIES, entries);
+        return true;
+    }
+
+    deleteMigraine(id) {
+        return this.deleteEntry(id);
+    }
+
+    getMigraineById(id) {
+        return this.getEntry(id);
+    }
+
+    getUserPreferences() {
+        return this.getPreferences();
+    }
+
+    updateUserPreferences(preferences) {
+        return this.savePreferences(preferences);
+    }
 }
 
 export default new StorageService();

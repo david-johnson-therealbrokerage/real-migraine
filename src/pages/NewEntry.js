@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import storageService from '../services/storage';
+import dataService from '../services/dataService';
 
 function NewEntry() {
     const navigate = useNavigate();
@@ -71,21 +71,9 @@ function NewEntry() {
                 notes: formData.notes
             };
             
-            // Check storage capacity before saving
-            const storageInfo = storageService.getStorageInfo();
-            if (storageInfo && storageInfo.isNearLimit) {
-                if (!window.confirm('Storage is nearly full. Continue saving?')) {
-                    setIsSubmitting(false);
-                    return;
-                }
-            }
-            
-            const savedEntry = storageService.saveEntry(entry);
-            if (savedEntry) {
-                navigate('/history');
-            } else {
-                throw new Error('Failed to save entry');
-            }
+            // Save the new entry using dataService
+            await dataService.addMigraine(entry);
+            navigate('/history');
         } catch (err) {
             console.error('Error saving entry:', err);
             setError(err.message || 'Failed to save entry. Please try again.');

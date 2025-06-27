@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import storageService from '../services/storage';
+import dataService from '../services/dataService';
 
 function History() {
     const navigate = useNavigate();
@@ -12,9 +12,9 @@ function History() {
         loadEntries();
     }, []);
     
-    const loadEntries = () => {
+    const loadEntries = async () => {
         try {
-            const allEntries = storageService.getAllEntries();
+            const allEntries = await dataService.getMigraines();
             // Sort by most recent first
             const sortedEntries = allEntries.sort((a, b) => 
                 new Date(b.startDateTime) - new Date(a.startDateTime)
@@ -54,12 +54,8 @@ function History() {
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this entry?')) {
             try {
-                const success = storageService.deleteEntry(id);
-                if (success) {
-                    loadEntries();
-                } else {
-                    throw new Error('Failed to delete entry');
-                }
+                await dataService.deleteMigraine(id);
+                await loadEntries();
             } catch (err) {
                 console.error('Error deleting entry:', err);
                 setError('Failed to delete entry. Please try again.');

@@ -12,7 +12,9 @@
     "screenshot:all": "node scripts/screenshot-modes.js",
     "screenshot:milestone": "node scripts/capture-milestone.js",
     "deploy": "node scripts/deploy.js",
-    "start:firebase:emulators": "firebase emulators:start"
+    "start:firebase:emulators": "firebase emulators:start",
+    "deploy:rules": "node scripts/deploy-rules.js",
+    "deploy:firestore": "firebase deploy --only firestore"
   },
   "keywords": [],
   "author": "",

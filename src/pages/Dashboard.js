@@ -14,15 +14,37 @@ function Dashboard() {
         mostCommonTrigger: '--',
         recentEntries: []
     });
-    
     useEffect(() => {
         calculateStats();
+        
+        // If using Firebase, listen for auth state changes
+        if (isFirebaseEnabled()) {
+            const unsubscribe = authService.onAuthStateChange(() => {
+                calculateStats();
+            });
+            
+            return () => {
+                if (unsubscribe) unsubscribe();
+            };
+        }
     }, []);
     
     const calculateStats = async () => {
         try {
-            // Check if we're using Firebase or local storage
-            const entries = isFirebaseEnabled() ? await dataService.getMigraines() : storageService.getAllEntries();
+            // Check if we're using Firebase and if user is authenticated
+            let entries = [];
+            if (isFirebaseEnabled()) {
+                // Only fetch from Firebase if authenticated
+                if (authService.isAuthenticated()) {
+                    entries = await dataService.getMigraines();
+                } else {
+                    // User not authenticated yet, skip calculation
+                    return;
+                }
+            } else {
+                // Use local storage
+                entries = storageService.getAllEntries();
+            }
         
         // Total count
         const total = entries.length;

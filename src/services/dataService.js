@@ -15,6 +15,9 @@ class DataService {
   async getMigraines() {
     if (this.useFirebase && authService.isAuthenticated()) {
       const user = authService.getCurrentUser();
+      if (!user) {
+        return []; // Return empty array if no user
+      }
       const result = await firestoreService.getUserMigraines(user.uid);
       if (result.success) {
         return result.data.map(m => firestoreService.convertFromFirestoreFormat(m));
