@@ -16,6 +16,9 @@ import History from './pages/History';
 import EditEntry from './pages/EditEntry';
 import Settings from './pages/Settings';
 import Profile from './pages/Profile';
+import Analytics from './pages/Analytics';
+import Export from './pages/Export';
+import Medications from './pages/Medications';
 
 function App() {
     const [darkMode, setDarkMode] = useState(() => {
@@ -85,6 +88,9 @@ function App() {
                             <Link to="/" className="nav-link">Dashboard</Link>
                             <Link to="/new" className="nav-link">New Entry</Link>
                             <Link to="/history" className="nav-link">History</Link>
+                            <Link to="/medications" className="nav-link">Medications</Link>
+                            <Link to="/analytics" className="nav-link">Analytics</Link>
+                            <Link to="/export" className="nav-link">Export</Link>
                             <Link to="/settings" className="nav-link">Settings</Link>
                             {useFirebase && <Link to="/profile" className="nav-link">Profile</Link>}
                         </nav>
@@ -134,6 +140,9 @@ function App() {
                                 <Route path="/history" element={<History />} />
                                 <Route path="/edit/:id" element={<EditEntry />} />
                                 <Route path="/settings" element={<Settings />} />
+                                <Route path="/medications" element={<Medications />} />
+                                <Route path="/analytics" element={<Analytics />} />
+                                <Route path="/export" element={<Export />} />
                                 <Route path="/profile" element={<Profile />} />
                                 <Route path="/login" element={<Navigate to="/" />} />
                             </>
