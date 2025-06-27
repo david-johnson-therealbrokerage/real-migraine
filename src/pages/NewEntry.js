@@ -12,7 +12,7 @@ function NewEntry() {
         endDate: '',
         endTime: '',
         intensity: 5,
-        location: '',
+        location: 'Unspecified',
         symptoms: [],
         triggers: [],
         notes: ''
@@ -29,7 +29,7 @@ function NewEntry() {
     ];
 
     const locationOptions = [
-        'Left Side', 'Right Side', 'Both Sides', 'Front', 'Back', 'Behind Eyes'
+        'Unspecified', 'Left Side', 'Right Side', 'Both Sides', 'Front', 'Back', 'Behind Eyes'
     ];
 
     const handleSubmit = async (e) => {
@@ -96,6 +96,15 @@ function NewEntry() {
             )}
             
             <form onSubmit={handleSubmit} className="migraine-form">
+                <div className="form-buttons">
+                    <button type="button" onClick={handleCancel} className="btn-secondary" disabled={isSubmitting}>
+                        Cancel
+                    </button>
+                    <button type="submit" className="btn-primary" disabled={isSubmitting}>
+                        {isSubmitting ? 'Saving...' : 'Save Entry'}
+                    </button>
+                </div>
+
                 <div className="form-group">
                     <label>Start Date & Time</label>
                     <div className="datetime-group">
