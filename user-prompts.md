@@ -29,3 +29,13 @@
 **Request:** first, commit the user-prompts.md changes, then yes start project initialization.
 
 **Response:** Committed user-prompts.md changes and initialized React project with Parcel
+
+## Prompt 7
+**Request:** take a screenshot of http://localhost:1234/ and create a docs/milestones.md file to track app development progress.
+
+**Response:** Created screenshot of initial app and milestones.md to track development progress
+
+## Prompt 8
+**Request:** use puppetter to export web url images
+
+**Response:** Installed Puppeteer and created screenshot scripts with multiple capture modes (light, dark, mobile)

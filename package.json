@@ -2,11 +2,13 @@
   "name": "real-migraine",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "source": "public/index.html",
   "scripts": {
     "start": "parcel public/index.html",
     "build": "parcel build public/index.html",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "screenshot": "node scripts/screenshot.js",
+    "screenshot:all": "node scripts/screenshot-modes.js"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +18,7 @@
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "parcel": "^2.15.4"
+    "parcel": "^2.15.4",
+    "puppeteer": "^24.11.0"
   }
 }
