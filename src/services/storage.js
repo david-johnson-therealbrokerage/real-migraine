@@ -71,7 +71,8 @@ class StorageService {
 
     getEntry(id) {
         const entries = this.getAllEntries();
-        return entries.find(entry => entry.id === id);
+        // Convert both to string for comparison since URL params are strings
+        return entries.find(entry => String(entry.id) === String(id));
     }
 
     saveEntry(entry) {
@@ -83,7 +84,7 @@ class StorageService {
             updatedAt: new Date().toISOString()
         };
 
-        const existingIndex = entries.findIndex(e => e.id === newEntry.id);
+        const existingIndex = entries.findIndex(e => String(e.id) === String(newEntry.id));
         if (existingIndex >= 0) {
             entries[existingIndex] = newEntry;
         } else {
@@ -95,7 +96,7 @@ class StorageService {
 
     deleteEntry(id) {
         const entries = this.getAllEntries();
-        const filtered = entries.filter(entry => entry.id !== id);
+        const filtered = entries.filter(entry => String(entry.id) !== String(id));
         return this.set(STORAGE_KEYS.ENTRIES, filtered);
     }
 

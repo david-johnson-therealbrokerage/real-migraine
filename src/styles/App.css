@@ -295,7 +295,8 @@ body.dark-mode .btn-secondary:hover {
 /* Page Styles */
 .dashboard-page,
 .history-page,
-.new-entry-page {
+.new-entry-page,
+.edit-entry-page {
     max-width: 1000px;
     margin: 0 auto;
 }
@@ -616,6 +617,29 @@ body.dark-mode .recent-location {
 
 .view-all-link:hover {
     text-decoration: underline;
+}
+
+/* Error Page */
+.error-page {
+    max-width: 600px;
+    margin: 2rem auto;
+    text-align: center;
+    padding: 2rem;
+}
+
+.error-page h2 {
+    color: #d32f2f;
+    margin-bottom: 1rem;
+}
+
+.error-page p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    color: #666;
+}
+
+body.dark-mode .error-page p {
+    color: #b0b0b0;
 }
 
 /* Responsive */

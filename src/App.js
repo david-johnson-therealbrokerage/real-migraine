@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import NewEntry from './pages/NewEntry';
 import History from './pages/History';
+import EditEntry from './pages/EditEntry';
 
 function App() {
     const [darkMode, setDarkMode] = useState(() => {
@@ -91,6 +92,7 @@ function App() {
                                 <Route path="/" element={<Dashboard />} />
                                 <Route path="/new" element={<NewEntry />} />
                                 <Route path="/history" element={<History />} />
+                                <Route path="/edit/:id" element={<EditEntry />} />
                                 <Route path="/login" element={<Navigate to="/" />} />
                             </>
                         )}

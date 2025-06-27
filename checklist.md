@@ -40,7 +40,7 @@
 - [x] Add notes field
 - [x] Implement form validation
 - [x] Create entry submission logic
-- [ ] Implement entry editing
+- [x] Implement entry editing
 - [x] Add entry deletion with confirmation
 - [x] Create entry list/history view
 
