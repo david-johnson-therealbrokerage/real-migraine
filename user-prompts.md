@@ -169,3 +169,13 @@
 **Request:** edit provides a blank page
 
 **Response:** Fixed ID comparison issue in storage service by converting IDs to strings for consistent comparison between URL params and stored data
+
+## Prompt 35
+**Request:** commit
+
+**Response:** Committed entry editing functionality with ID comparison fixes
+
+## Prompt 36
+**Request:** ensure index.html is not cached
+
+**Response:** Added cache-busting headers to index.html and configured Firebase hosting to prevent caching of HTML while allowing proper caching for assets
