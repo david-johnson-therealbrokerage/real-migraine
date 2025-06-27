@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import storageService from '../services/storage';
+import dataService from '../services/dataService';
+import MigrationBanner from '../components/MigrationBanner';
+import { isFirebaseEnabled } from '../config/environment';
 
 function Dashboard() {
     const [stats, setStats] = useState({
@@ -15,8 +18,9 @@ function Dashboard() {
         calculateStats();
     }, []);
     
-    const calculateStats = () => {
-        const entries = storageService.getAllEntries();
+    const calculateStats = async () => {
+        try {
+            const entries = await dataService.getMigraines();
         
         // Total count
         const total = entries.length;
@@ -71,6 +75,17 @@ function Dashboard() {
             mostCommonTrigger,
             recentEntries
         });
+        } catch (error) {
+            console.error('Error calculating stats:', error);
+            // Fallback to empty stats on error
+            setStats({
+                total: 0,
+                thisMonth: 0,
+                avgDuration: '--',
+                mostCommonTrigger: '--',
+                recentEntries: []
+            });
+        }
     };
     
     const formatDate = (dateStr) => {
@@ -83,6 +98,7 @@ function Dashboard() {
     
     return (
         <div className="dashboard-page">
+            {isFirebaseEnabled() && <MigrationBanner />}
             <h2>Dashboard</h2>
             <div className="stats-grid">
                 <div className="stat-card">

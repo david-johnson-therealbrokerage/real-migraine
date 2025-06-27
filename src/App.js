@@ -3,9 +3,13 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-ro
 import './styles/App.css';
 import storageService from './services/storage';
 import ErrorBoundary from './components/ErrorBoundary';
+import authService from './services/authService';
+import dataService from './services/dataService';
+import ENV, { isFirebaseEnabled } from './config/environment';
 
 // Pages
 import Login from './pages/Login';
+import FirebaseLogin from './pages/FirebaseLogin';
 import Dashboard from './pages/Dashboard';
 import NewEntry from './pages/NewEntry';
 import History from './pages/History';
@@ -20,15 +24,31 @@ function App() {
     
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [currentUser, setCurrentUser] = useState(null);
+    const useFirebase = isFirebaseEnabled();
 
     useEffect(() => {
-        // Check if user has set up a PIN
-        const hasPin = storageService.hasPin();
-        if (!hasPin) {
-            setIsAuthenticated(true); // No PIN required yet
+        // Configure data service
+        dataService.setUseFirebase(useFirebase);
+        
+        if (useFirebase) {
+            // Set up Firebase auth listener
+            const unsubscribe = authService.onAuthStateChange((user) => {
+                setCurrentUser(user);
+                setIsAuthenticated(!!user);
+                setIsLoading(false);
+            });
+            
+            return () => unsubscribe();
+        } else {
+            // Check if user has set up a PIN
+            const hasPin = storageService.hasPin();
+            if (!hasPin) {
+                setIsAuthenticated(true); // No PIN required yet
+            }
+            setIsLoading(false);
         }
-        setIsLoading(false);
-    }, []);
+    }, [useFirebase]);
 
     useEffect(() => {
         document.body.classList.toggle('dark-mode', darkMode);
@@ -40,7 +60,10 @@ function App() {
         setIsAuthenticated(true);
     };
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        if (useFirebase) {
+            await authService.signOut();
+        }
         setIsAuthenticated(false);
     };
 
@@ -71,7 +94,7 @@ function App() {
                             >
                                 {darkMode ? '☀️' : '🌙'}
                             </button>
-                            {storageService.hasPin() && (
+                            {(useFirebase || storageService.hasPin()) && (
                                 <button 
                                     className="logout-btn"
                                     onClick={handleLogout}
@@ -88,7 +111,13 @@ function App() {
                     <Routes>
                         {!isAuthenticated ? (
                             <>
-                                <Route path="/login" element={<Login onLogin={handleLogin} />} />
+                                <Route 
+                                    path="/login" 
+                                    element={useFirebase ? 
+                                        <FirebaseLogin onLogin={handleLogin} /> : 
+                                        <Login onLogin={handleLogin} />
+                                    } 
+                                />
                                 <Route path="*" element={<Navigate to="/login" />} />
                             </>
                         ) : (
