@@ -157,7 +157,9 @@ class FirestoreService {
     } catch (error) {
       // Check if it's an index error
       if (error.code === 'failed-precondition' && error.message.includes('index')) {
-        console.warn('Firestore index not yet created. Trying simple query without ordering.');
+        if (process.env.NODE_ENV === 'production') {
+          console.warn('Firestore index not yet created. Trying simple query without ordering.');
+        }
         
         try {
           // Fallback to simple query without orderBy
@@ -302,40 +304,78 @@ class FirestoreService {
 
   // Convert Firestore data to app format
   convertFromFirestoreFormat(firestoreData) {
-    // Helper function to convert timestamps
+    // Ensure we have valid data
+    if (!firestoreData || typeof firestoreData !== 'object') {
+      console.warn('Invalid Firestore data:', firestoreData);
+      return firestoreData;
+    }
+    
+    // Helper function to safely convert timestamps
     const convertTimestamp = (timestamp) => {
-      if (!timestamp) return null;
-      
-      // If it's already a Date object, return it
-      if (timestamp instanceof Date) {
+      try {
+        if (!timestamp) return null;
+        
+        // If it's already a Date object, return it
+        if (timestamp instanceof Date) {
+          return timestamp;
+        }
+        
+        // If it's a Firestore Timestamp object
+        if (timestamp && typeof timestamp === 'object') {
+          // Check for toDate method
+          if (typeof timestamp.toDate === 'function') {
+            return timestamp.toDate();
+          }
+          
+          // Check for Firestore timestamp structure (seconds and nanoseconds)
+          if ('seconds' in timestamp) {
+            return new Date(timestamp.seconds * 1000);
+          }
+          
+          // Check for _seconds (internal Firestore property)
+          if ('_seconds' in timestamp) {
+            return new Date(timestamp._seconds * 1000);
+          }
+        }
+        
+        // If it's a string, parse it
+        if (typeof timestamp === 'string') {
+          return new Date(timestamp);
+        }
+        
+        // If it's a number (milliseconds), convert it
+        if (typeof timestamp === 'number') {
+          return new Date(timestamp);
+        }
+        
+        console.warn('Unknown timestamp format:', timestamp);
         return timestamp;
+      } catch (e) {
+        console.error('Error converting timestamp:', e, 'Original value:', timestamp);
+        return null;
       }
-      
-      // If it's a Firestore Timestamp, convert it
-      if (timestamp && typeof timestamp.toDate === 'function') {
-        return timestamp.toDate();
-      }
-      
-      // If it's a string, parse it
-      if (typeof timestamp === 'string') {
-        return new Date(timestamp);
-      }
-      
-      // If it's a plain object with seconds (Firestore timestamp from JSON)
-      if (timestamp && timestamp.seconds) {
-        return new Date(timestamp.seconds * 1000);
-      }
-      
-      return timestamp;
     };
     
-    return {
-      ...firestoreData,
-      startDateTime: convertTimestamp(firestoreData.startDateTime),
-      endDateTime: convertTimestamp(firestoreData.endDateTime),
-      createdAt: convertTimestamp(firestoreData.createdAt),
-      updatedAt: convertTimestamp(firestoreData.updatedAt)
+    // Create a new object with converted timestamps
+    const converted = {
+      ...firestoreData
     };
+    
+    // Convert timestamp fields if they exist
+    if ('startDateTime' in firestoreData) {
+      converted.startDateTime = convertTimestamp(firestoreData.startDateTime);
+    }
+    if ('endDateTime' in firestoreData) {
+      converted.endDateTime = convertTimestamp(firestoreData.endDateTime);
+    }
+    if ('createdAt' in firestoreData) {
+      converted.createdAt = convertTimestamp(firestoreData.createdAt);
+    }
+    if ('updatedAt' in firestoreData) {
+      converted.updatedAt = convertTimestamp(firestoreData.updatedAt);
+    }
+    
+    return converted;
   }
 }
 

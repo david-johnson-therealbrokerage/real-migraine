@@ -13,6 +13,7 @@
     "screenshot:milestone": "node scripts/capture-milestone.js",
     "deploy": "node scripts/deploy.js",
     "start:firebase:emulators": "firebase emulators:start",
+    "init:firestore": "node scripts/init-firestore-emulator.js",
     "deploy:rules": "node scripts/deploy-rules.js",
     "deploy:firestore": "firebase deploy --only firestore"
   },
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "buffer": "^6.0.3",
+    "firebase-admin": "^13.4.0",
     "parcel": "^2.15.4",
     "puppeteer": "^24.11.0"
   }
