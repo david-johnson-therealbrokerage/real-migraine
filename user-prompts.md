@@ -9,3 +9,8 @@
 **Request:** log my prompt requests to user-prompts.md
 
 **Response:** Created this logging file
+
+## Prompt 3
+**Request:** I'd like to break up the delivery milestones. For the mvp (minimum viable product), this app should run locally and use browser local storage.
+
+**Response:** Updated checklist.md to separate MVP (local storage) from future Firebase integration
