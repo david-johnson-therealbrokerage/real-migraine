@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import storageService from '../services/storage';
 
 function Login({ onLogin }) {
     const navigate = useNavigate();
@@ -7,6 +8,12 @@ function Login({ onLogin }) {
     const [isNewUser, setIsNewUser] = useState(false);
     const [confirmPin, setConfirmPin] = useState('');
     const [error, setError] = useState('');
+    
+    useEffect(() => {
+        // Check if user already has a PIN
+        const hasPin = storageService.hasPin();
+        setIsNewUser(!hasPin);
+    }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -21,15 +28,23 @@ function Login({ onLogin }) {
                 setError('PINs do not match');
                 return;
             }
-            // TODO: Save hashed PIN to local storage
-            console.log('Creating new PIN');
-            onLogin();
-            navigate('/');
+            // Save PIN
+            const success = storageService.setPin(pin);
+            if (success) {
+                onLogin();
+                navigate('/');
+            } else {
+                setError('Failed to save PIN. Please try again.');
+            }
         } else {
-            // TODO: Verify PIN from local storage
-            console.log('Verifying PIN');
-            onLogin();
-            navigate('/');
+            // Verify PIN
+            const isValid = storageService.verifyPin(pin);
+            if (isValid) {
+                onLogin();
+                navigate('/');
+            } else {
+                setError('Incorrect PIN');
+            }
         }
     };
 

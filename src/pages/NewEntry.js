@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import storageService from '../services/storage';
 
 function NewEntry() {
     const navigate = useNavigate();
@@ -31,9 +32,32 @@ function NewEntry() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('Form submitted:', formData);
-        // TODO: Save to local storage
-        navigate('/history');
+        
+        // Calculate duration if end date/time provided
+        let duration = null;
+        if (formData.endDate && formData.endTime) {
+            const start = new Date(`${formData.startDate}T${formData.startTime}`);
+            const end = new Date(`${formData.endDate}T${formData.endTime}`);
+            duration = Math.round((end - start) / (1000 * 60)); // duration in minutes
+        }
+        
+        const entry = {
+            startDateTime: `${formData.startDate}T${formData.startTime}`,
+            endDateTime: formData.endDate && formData.endTime ? `${formData.endDate}T${formData.endTime}` : null,
+            duration,
+            intensity: formData.intensity,
+            location: formData.location,
+            symptoms: formData.symptoms,
+            triggers: formData.triggers,
+            notes: formData.notes
+        };
+        
+        const savedEntry = storageService.saveEntry(entry);
+        if (savedEntry) {
+            navigate('/history');
+        } else {
+            alert('Failed to save entry. Please try again.');
+        }
     };
 
     const handleCancel = () => {
