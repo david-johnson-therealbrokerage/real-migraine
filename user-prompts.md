@@ -179,3 +179,13 @@
 **Request:** ensure index.html is not cached
 
 **Response:** Added cache-busting headers to index.html and configured Firebase hosting to prevent caching of HTML while allowing proper caching for assets
+
+## Prompt 37
+**Request:** commit
+
+**Response:** Committed cache prevention configuration for index.html and Firebase hosting
+
+## Prompt 38
+**Request:** modify deploy to clear old dist files before building
+
+**Response:** Modified deploy.js script to clean dist directory before building, ensuring no stale files from previous builds
