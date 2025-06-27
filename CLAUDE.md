@@ -9,6 +9,9 @@ This is a migraine tracking web application being developed in phases:
 - **Phase 2**: Firebase integration (auth, Firestore, hosting)
 - **Phase 3**: Advanced analytics and features
 
+**Live Application**: https://real-migraines.web.app/
+**Firebase Console**: https://console.firebase.google.com/project/real-migraines/overview
+
 ## Technology Stack
 
 - **Frontend**: React

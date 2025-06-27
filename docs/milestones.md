@@ -14,6 +14,8 @@ This document tracks the development progress of the Migraine Tracker applicatio
 - Created basic React application
 - Implemented dark mode toggle with localStorage persistence
 - Added responsive design foundation
+- Deployed to Firebase Hosting
+- **Live URL:** https://real-migraines.web.app/
 
 ### Screenshots:
 

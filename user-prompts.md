@@ -54,3 +54,18 @@
 **Request:** I'm now adding firebase hosting. Please log that I am executing `firebase login` `firebase init` and `firebase deploy` from the command line. Please add an `npm run deploy` step that runs parcel build then asks to confirm, then runs firebase deploy
 
 **Response:** Logged Firebase setup commands and created npm deploy script with confirmation prompt
+
+## Prompt 12
+**Request:** The public application is now available at https://real-migraines.web.app/
+
+**Response:** Updated milestones.md to include the live Firebase hosting URL
+
+## Prompt 13
+**Request:** add .firebase to gitignore
+
+**Response:** Added .firebase/ directory to .gitignore to exclude Firebase cache files
+
+## Prompt 14
+**Request:** The firebase console url is: https://console.firebase.google.com/project/real-migraines/overview
+
+**Response:** Documented Firebase console URL in CLAUDE.md for future reference
