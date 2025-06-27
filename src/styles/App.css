@@ -194,6 +194,7 @@ body.dark-mode .form-group label {
 }
 
 .form-group input[type="text"],
+.form-group input[type="email"],
 .form-group input[type="date"],
 .form-group input[type="time"],
 .form-group input[type="password"],
@@ -598,9 +599,6 @@ body.dark-mode .btn-google:hover:not(:disabled) {
     border-color: #357ae8;
 }
 
-.google-icon {
-    font-size: 1.2rem;
-}
 
 /* Auth Links */
 .auth-links {
