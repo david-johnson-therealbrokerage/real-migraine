@@ -56,28 +56,8 @@ This document tracks the development progress of the Migraine Tracker applicatio
 
 ### Screenshots:
 
-#### New Entry Form:
-![New Entry Form](./screenshots/milestone-2/new-entry-form.png)
-
-The entry form includes:
-- Date and time pickers for start/end
-- Pain intensity slider (1-10)
-- Location dropdown
-- Symptoms and triggers checklists
-- Notes field for additional details
-
-#### History Page with Entries:
-![History with Entries](./screenshots/milestone-2/history-with-entries.png)
-
-History features:
-- Chronological entry list
-- Color-coded intensity badges
-- Full entry details display
-- Edit and delete actions
-- Formatted dates and durations
-
-#### Dashboard with Statistics:
-![Dashboard with Stats](./screenshots/milestone-2/dashboard-with-stats.png)
+#### Dashboard:
+![Dashboard](./screenshots/milestone-dashboard.png)
 
 Dashboard displays:
 - Total migraine count
@@ -86,12 +66,25 @@ Dashboard displays:
 - Most common trigger identification
 - Recent entries summary
 
-#### Dark Mode Support:
-![Dashboard Dark Mode](./screenshots/milestone-2/dashboard-dark-mode.png)
-![History Dark Mode](./screenshots/milestone-2/history-dark-mode.png)
+#### New Entry Form:
+![New Entry Form](./screenshots/milestone-new-entry.png)
 
-#### Mobile Responsive:
-![Dashboard Mobile](./screenshots/milestone-2/dashboard-mobile.png)
+The entry form includes:
+- Date and time pickers for start/end
+- Pain intensity slider (1-10)  
+- Location dropdown
+- Symptoms and triggers checklists
+- Notes field for additional details
+
+#### History Page:
+![History](./screenshots/milestone-history.png)
+
+History features:
+- Chronological entry list
+- Color-coded intensity badges
+- Full entry details display
+- Edit and delete actions
+- Formatted dates and durations
 
 ### Key Features Implemented:
 - ✅ Full CRUD operations for migraine entries
