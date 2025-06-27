@@ -14,3 +14,8 @@
 **Request:** I'd like to break up the delivery milestones. For the mvp (minimum viable product), this app should run locally and use browser local storage.
 
 **Response:** Updated checklist.md to separate MVP (local storage) from future Firebase integration
+
+## Prompt 4
+**Request:** This project is already hosted in a git repository.
+
+**Response:** Acknowledged - removed "Initialize Git repository" from checklist since it's already done

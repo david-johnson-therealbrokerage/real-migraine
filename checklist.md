@@ -7,8 +7,7 @@
 - [ ] Install React and React DOM
 - [ ] Install and configure Parcel
 - [ ] Set up project folder structure
-- [ ] Create .gitignore file
-- [ ] Initialize Git repository
+- [ ] Update .gitignore file as needed
 
 ### Core Infrastructure
 - [ ] Set up React application structure
